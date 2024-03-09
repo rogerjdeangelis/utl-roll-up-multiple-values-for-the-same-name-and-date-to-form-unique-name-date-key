@@ -1,0 +1,61 @@
+%let pgm=utl-roll-up=multiple-values-for-the-same-name-and-date-to-form-unique-name-date-key;
+
+Roll up multiple values for the same subject and date to form unique subject date key
+
+github
+https://tinyurl.com/4yz7a7fc
+https://github.com/rogerjdeangelis/utl-roll-up-multiple-values-for-the-same-name-and-date-to-form-unique-name-date-key
+
+/**************************************************************************************************************************/
+/*                                        |                                   |                                           */
+/*           INPUT                        |          PROCESS                  |             OUTPUT                        */
+/*                                        |                                   |                                           */
+/* data have;                             |  proc sort data=have out=havSrt   |   NAME       DATE     ROL                 */
+/* input Name $ Date $10. Grocery $;      |    noequals;                      |                                           */
+/* cards4;                                |    by name date;                  |   Bob     2017-07-22  Butter              */
+/* Bob 2017-09-03 Eggs                    |  run;quit;                        |   Bob     2017-08-11  Milk                */
+/* Bob 2017-09-03 Bread                   |                                   |   Bob     2017-09-03  Bread,Eggs          */
+/* Bob 2017-08-11 Milk                    |  data want(index=(namDte=         |                                           */
+/* Bob 2017-07-22 Butter                  |     (name date)));                |   Joe     2017-08-01  Bread               */
+/* Tom 2017-09-05 Milk                    |    length rol $200;               |   Joe     2017-08-05  Steak               */
+/* Tom 2017-09-05 Bread                   |    retain rol;                    |                                           */
+/* Tom 2017-09-05 Eggs                    |    set havSrt;                    |   Tom     2017-07-15  Ham                 */
+/* Tom 2017-07-15 Ham                     |    by name date;                  |   Tom     2017-09-05  Eggs,Bread,Milk     */
+/* Joe 2017-08-05 Steak                   |    rol = ifc (                    |                                           */
+/* Joe 2017-08-01 Bread                   |        first.date                 |                                           */
+/* ;;;;                                   |       ,grocery                    | Alphabetic List of Indexes and Attributes */
+/* run;quit;                              |       ,catx(',',rol,grocery));    |                                           */
+/*                                        |    if last.date;                  |                  # of                     */
+/* SORTED FOR DOCUMENTATION               |    drop grocery;                  |                Unique                     */
+/* OF ALGORITHM                           |  run;quit;                        | #    Index     Values    Variables        */
+/*                                        |                                   |                                           */
+/*                                        |                                   | 1    NamDte         7    NAME DATE        */
+/* NAME       DATE       GROCERY          |                                   |                                           */
+/*                                        |                                   |                                           */
+/* Bob     2017-07-22    Butter           |                                   |                                           */
+/* Bob     2017-08-11    Milk             |                                   |                                           */
+/*                                        |                                   |                                           */
+/* Bob     2017-09-03    Bread *Replace   |                                   |                                           */
+/* Bob     2017-09-03    Eggs  *Replace   |                                   |                                           */
+/*                                        |                                   |                                           */
+/* Bob     2017-09-03    Bread, Eggs      |                                   |                                           */
+/*                                        |                                   |                                           */
+/* Joe     2017-08-01    Bread            |                                   |                                           */
+/* Joe     2017-08-05    Steak            |                                   |                                           */
+/* Tom     2017-07-15    Ham              |                                   |                                           */
+/*                                        |                                   |                                           */
+/* Tom     2017-09-05    Eggs   *Replace  |                                   |                                           */
+/* Tom     2017-09-05    Bread  *Replace  |                                   |                                           */
+/* Tom     2017-09-05    Milk   *Replace  |                                   |                                           */
+/*                                        |                                   |                                           */
+/* Tom     2017-09-05    Eggs,Bread,Milk  |                                   |                                           */
+/*                                        |                                   |                                           */
+/**************************************************************************************************************************/
+
+/*              _
+  ___ _ __   __| |
+ / _ \ `_ \ / _` |
+|  __/ | | | (_| |
+ \___|_| |_|\__,_|
+
+*/
